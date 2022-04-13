@@ -20,12 +20,12 @@
 
 ---
 
-## 코드 구현
+## 코드 구현 + 설명
 
-```Java
 import java.io.*;
 import java.util.*;
 
+//노드 생성 
 class Node {
     Node left, right;
     double value;
@@ -44,8 +44,7 @@ class Node {
         if(left.value < right.value) {
             this.right = right;
             this.left = left;
-        }
-        else {
+        } else {
             this.right = left;
             this.left = right;
         }
@@ -63,7 +62,8 @@ public class Huffman {
     public static void main(String[] args) throws IOException {
         int SelectN = 0;
         while(SelectN != -1) {
-            if(handlingDecision(SelectN)) continue;
+            if(TextReader(SelectN))
+                continue;
             SelectN = console();
         }
         System.out.println("허프만 코드 종료");
@@ -81,13 +81,13 @@ public class Huffman {
         return SelectN;
     }
 
-    private static boolean handlingDecision(int SelectN) throws IOException {
+    private static boolean TextReader(int SelectN) throws IOException {
         if(SelectN == 1) {
             BufferedReader readFile = new BufferedReader(new FileReader("./input.txt"));
             while(true) {
                 String line = readFile.readLine();
                 if(line == null) break;
-                handleNewText(line);
+                handleNew(line);
             }
             readFile.close();
         } else if(SelectN == 2) {
@@ -99,10 +99,11 @@ public class Huffman {
             }
             readFile.close();
         }
+
         return false;
     }
 
-    private static void handleNewText(String line) throws IOException {
+    private static void handleNew(String line) throws IOException {
         text = line;
         ASCII = new int[128];
         nodes.clear();
@@ -110,9 +111,8 @@ public class Huffman {
         encoded = "";
         decoded = "";
         calculateCharIntervals(nodes);
-        buildTree(nodes);
+        GenerateTree(nodes);
         generateCodes(nodes.peek(), "");
-        printCodes();
         encodeText(text);
     }
 
@@ -127,7 +127,7 @@ public class Huffman {
         }
     }
 
-    private static void buildTree(PriorityQueue<Node> vector) {
+    private static void GenerateTree(PriorityQueue<Node> vector) {
         while(vector.size() > 1)
             vector.add(new Node(vector.poll(), vector.poll()));
     }
@@ -141,11 +141,6 @@ public class Huffman {
             if(node.left == null && node.right == null)
                 codes.put(node.character.charAt(0), s);
         }
-    }
-
-    private static void printCodes() {
-        System.out.println("--- Printing Codes ---");
-        codes.forEach((k, v) -> System.out.println("'" + k + "' : " + v));
     }
 
     private static void encodeText(String line) throws IOException {
@@ -177,7 +172,8 @@ public class Huffman {
             if(tmpNode != null) {
                 if(tmpNode.character.length() == 1) {
                     decoded += tmpNode.character;
-                } else {
+                }
+                else {
                     System.out.println("Input not Valid");
                 }
             }
@@ -185,7 +181,7 @@ public class Huffman {
         System.out.println("Decoded Text: " + decoded);
     }
 }
-```
+
 
 ### 작동 원리
 
@@ -199,11 +195,6 @@ A: 4개, B: 3개, C: 8개, D: 5개,
 `1` 을 입력하여 부호화를 실행한다.
 
 ```
---- Printing Codes ---
-'A' : 111
-'B' : 110
-'C' : 0
-'D' : 10
 Encoded Text: 111 110 0 111 0 110 0 10 0 110 0 111 0 10 0 111 0 10 10 10 
 ```
 
@@ -224,7 +215,7 @@ input.txt에 입력한 텍스트와 같음을 알 수 있다.
 
 ---
 
-### 트리
+#### 트리
              [20]
                │
             0┌───┐1
