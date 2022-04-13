@@ -21,7 +21,7 @@
 ---
 
 ## 코드 구현 + 설명
-
+```java
 import java.io.*;
 import java.util.*;
 
@@ -181,7 +181,7 @@ public class Huffman {
         System.out.println("Decoded Text: " + decoded);
     }
 }
-
+```
 
 ### 작동 원리
 
