@@ -192,20 +192,19 @@ public class Huffman {
 상위 폴더에 input.txt와 encoded_result.txt를 생성하고 input.txt에 부호화(encode)할 텍스트 내용을 입력한다. 여기서 입력한 텍스트는 다음과 같다.
 
 ```
-AAAAAAAAAAAAAAAABBBBBBBBBBBCCCCCCCCDDDE
+ABCACBCDCBCACDCACDDD
 ```
 
-A: 16개, B: 11개, C: 8개, D: 3개, E: 1개  
+A: 4개, B: 3개, C: 8개, D: 5개,
 `1` 을 입력하여 부호화를 실행한다.
 
 ```
 --- Printing Codes ---
-'A' : 0
-'B' : 10
-'C' : 111
-'D' : 1101
-'E' : 1100
-Encoded Text: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 10 10 10 10 10 10 10 10 10 10 10 111 111 111 111 111 111 111 111 1101 1101 1101 1100
+'A' : 111
+'B' : 110
+'C' : 0
+'D' : 10
+Encoded Text: 111 110 0 111 0 110 0 10 0 110 0 111 0 10 0 111 0 10 10 10 
 ```
 
 부호화 과정이 끝나고 encoded_result.txt에 결과값이 저장된다.  
@@ -218,12 +217,25 @@ Encoded Text: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 10 10 10 10 10 10 10 10 10 10 10 1
 테스트를 위해 부호화된 텍스트를 다시 복호화(decode) 해보면
 
 ```
-Decoded Text: AAAAAAAAAAAAAAAABBBBBBBBBBBCCCCCCCCDDDE
+Decoded Text: ABCACBCDCBCACDCACDDD
 ```
 
 input.txt에 입력한 텍스트와 같음을 알 수 있다.
 
 ---
+
+### 트리
+             [20]
+               │
+            0┌───┐1
+         [C:8]   [12] 
+                   │
+                0┌───┐1
+             [D:5]   [7]  
+                      │
+                    0┌───┐1
+                 [B:3]   [A:4]
+
 
 ## 성능 측정
 
