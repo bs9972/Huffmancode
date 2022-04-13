@@ -1,0 +1,267 @@
+# 허프만 코드(Huffman code) 성능 측정 보고서
+
+> **컴퓨터 알고리즘, 김동훈 교수님, 2조**
+>
+> > 코드 구현: bs9972(신범식)  
+> > 성능 측정: hankom(한경환)
+
+## 허프만 코드란
+
+허프만 코딩(Huffman coding)은 대부분의 압축 프로그램에서 사용하는 방법으로, 자주 사용되는 문자는 적은 비트로 된 코드로 변환해서 표현하고, 별로 사용되지 않는 문자는 많은 비트로 된 코드로 변환하여 표현함으로써 전체 데이터를 표현하는 데 필요한 비트의 양을 줄이는 방법이다.
+
+## 압축 과정
+
+- 1. 데이터에서 사용되는 각 문자에 대한 출현 빈도수를 구한다.
+- 2. 빈도수를 기준으로 내림차순으로 정렬한다.
+- 3. 출현 빈도가 가장 적은 2개의 문자를 가지로 연결하고, 가지 위에 두 문자의 빈도수의 합을 적는다. `(Node Class)`
+- 4. 적어놓은 빈도수의 합을 기준으로 재배열한다.
+- 5. 이 과정을 반복한다.
+- 6. 더 이상 연결할 수 없으면 동작을 종료한다.
+
+---
+
+## 코드 구현
+
+```Java
+import java.io.*;
+import java.util.*;
+
+class Node {
+    Node left, right;
+    double value;
+    String character;
+
+    public Node(double value, String character) {
+        this.value = value;
+        this.character = character;
+        left = null;
+        right = null;
+    }
+
+    public Node(Node left, Node right) {
+        this.value = left.value + right.value;
+        character = left.character + right.character;
+        if(left.value < right.value) {
+            this.right = right;
+            this.left = left;
+        }
+        else {
+            this.right = left;
+            this.left = right;
+        }
+    }
+}
+
+public class Huffman {
+    static PriorityQueue<Node> nodes = new PriorityQueue<>((o1, o2) -> (o1.value < o2.value) ? -1 : 1);
+    static TreeMap<Character, String> codes = new TreeMap<>();
+    static String text = "";
+    static String encoded = "";
+    static String decoded = "";
+    static int ASCII[] = new int[128];
+
+    public static void main(String[] args) throws IOException {
+        int SelectN = 0;
+        while(SelectN != -1) {
+            if(handlingDecision(SelectN)) continue;
+            SelectN = console();
+        }
+        System.out.println("허프만 코드 종료");
+    }
+
+    private static int console() throws IOException {
+        int SelectN;
+        Scanner sc = new Scanner(System.in);
+        System.out.println(
+                "프로그램 종료하려면 -1 입력 \n" +
+                "인코딩 실행하려면 1 입력 \n" +
+                "디코딩 실행하려면 2 입력 \n");
+        SelectN = Integer.parseInt(sc.nextLine());
+
+        return SelectN;
+    }
+
+    private static boolean handlingDecision(int SelectN) throws IOException {
+        if(SelectN == 1) {
+            BufferedReader readFile = new BufferedReader(new FileReader("./input.txt"));
+            while(true) {
+                String line = readFile.readLine();
+                if(line == null) break;
+                handleNewText(line);
+            }
+            readFile.close();
+        } else if(SelectN == 2) {
+            BufferedReader readFile = new BufferedReader(new FileReader("./encoded_result.txt"));
+            while(true) {
+                String line = readFile.readLine();
+                if(line == null) break;
+                decodeText(line);
+            }
+            readFile.close();
+        }
+        return false;
+    }
+
+    private static void handleNewText(String line) throws IOException {
+        text = line;
+        ASCII = new int[128];
+        nodes.clear();
+        codes.clear();
+        encoded = "";
+        decoded = "";
+        calculateCharIntervals(nodes);
+        buildTree(nodes);
+        generateCodes(nodes.peek(), "");
+        printCodes();
+        encodeText(text);
+    }
+
+    private static void calculateCharIntervals(PriorityQueue<Node> vector) {
+        for(int i = 0; i < text.length(); i++) {
+            ASCII[text.charAt(i)]++;
+        }
+        for(int i = 0; i < ASCII.length; i++) {
+            if(ASCII[i] > 0) {
+                vector.add(new Node(ASCII[i] / (text.length() * 1.0), ((char) i) + ""));
+            }
+        }
+    }
+
+    private static void buildTree(PriorityQueue<Node> vector) {
+        while(vector.size() > 1)
+            vector.add(new Node(vector.poll(), vector.poll()));
+    }
+
+    private static void generateCodes(Node node, String s) {
+        if(node != null) {
+            if(node.right != null)
+                generateCodes(node.right, s + "1");
+            if(node.left != null)
+                generateCodes(node.left, s + "0");
+            if(node.left == null && node.right == null)
+                codes.put(node.character.charAt(0), s);
+        }
+    }
+
+    private static void printCodes() {
+        System.out.println("--- Printing Codes ---");
+        codes.forEach((k, v) -> System.out.println("'" + k + "' : " + v));
+    }
+
+    private static void encodeText(String line) throws IOException {
+        encoded = "";
+        String encoded_split = "";
+        for(int i = 0; i < text.length(); i++) {
+            encoded += codes.get(text.charAt(i));
+            encoded_split += codes.get(text.charAt(i)) + " ";
+        }
+        System.out.println("Encoded Text: " + encoded_split);
+        OutputStream output = new FileOutputStream("./encoded_result.txt");
+        byte[] by = encoded.getBytes();
+        output.write(by);
+    }
+
+    private static void decodeText(String line) {
+        decoded = "";
+        Node node = nodes.peek();
+        for(int i = 0; i<encoded.length();) {
+            Node tmpNode = node;
+            while(tmpNode.left != null && tmpNode.right != null && i < encoded.length()) {
+                if(encoded.charAt(i) == '1') {
+                    tmpNode = tmpNode.right;
+                } else {
+                    tmpNode = tmpNode.left;
+                }
+                i++;
+            }
+            if(tmpNode != null) {
+                if(tmpNode.character.length() == 1) {
+                    decoded += tmpNode.character;
+                } else {
+                    System.out.println("Input not Valid");
+                }
+            }
+        }
+        System.out.println("Decoded Text: " + decoded);
+    }
+}
+```
+
+### 작동 원리
+
+상위 폴더에 input.txt와 encoded_result.txt를 생성하고 input.txt에 부호화(encode)할 텍스트 내용을 입력한다. 여기서 입력한 텍스트는 다음과 같다.
+
+```
+AAAAAAAAAAAAAAAABBBBBBBBBBBCCCCCCCCDDDE
+```
+
+A: 16개, B: 11개, C: 8개, D: 3개, E: 1개  
+`1` 을 입력하여 부호화를 실행한다.
+
+```
+--- Printing Codes ---
+'A' : 0
+'B' : 10
+'C' : 111
+'D' : 1101
+'E' : 1100
+Encoded Text: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 10 10 10 10 10 10 10 10 10 10 10 111 111 111 111 111 111 111 111 1101 1101 1101 1100
+```
+
+부호화 과정이 끝나고 encoded_result.txt에 결과값이 저장된다.  
+저장된 값은 다음과 같다.
+
+```
+000000000000000010101010101010101010101111111111111111111111111101110111011100
+```
+
+테스트를 위해 부호화된 텍스트를 다시 복호화(decode) 해보면
+
+```
+Decoded Text: AAAAAAAAAAAAAAAABBBBBBBBBBBCCCCCCCCDDDE
+```
+
+input.txt에 입력한 텍스트와 같음을 알 수 있다.
+
+---
+
+## 성능 측정
+
+허프만 코드는 통계적으로 문자 출현 빈도가 높은 문자일수록 짧은 부호로 변환하여 데이터를 압축한다. 따라서 허프만 코드의 성능을 압축률을 기준으로 평가하고자 한다.
+
+### 입력 텍스트
+
+테스트할 텍스트는 다음과 같다.
+
+```
+I'm on the next level
+I: 1, ': 1, m: 1, o: 1, n: 2, t: 2, h: 1, e: 4, x: 1, l: 2, v: 1.
+```
+
+```
+XXXXAAACVVVEEEEEGGFGGGFAAS
+X: 4, A: 5, C: 1, V: 3, E: 5, G: 5, F: 2, S: 1
+```
+
+### 출력값과 용량 비교
+
+ASCII의 한 글자의 용량은 1 Byte(=8 bits)이다.  
+첫번째 텍스트의 부호화 전 용량은 `17 Bytes(=136 bits)`.
+
+```
+001000111110101101010001111100011100110011011100111101101111000001101011
+```
+
+부호화 후 용량은 `72 bits`로 64 bits가 감소한 것을 알 수 있다.
+
+두번째 텍스트의 부호화 전 용량은 `26 Bytes(=208 bits)`.
+
+```
+11011011011001010110101100100100111111111111111000010110000001011010110100
+```
+
+부호화 후 용량은 `74 bits`로 134 bits가 감소하여 더 높은 압축률을 보여준다.
+
+# 결론
+
+허프만 알고리즘을 통해 주어진 텍스트를 부호화하고, 복호화하는데 오류 없이 작동함을 확인할 수 있었다. 부호화 과정을 반복하며 여러 조건에 있는 텍스트들의 압축률을 비교해본 결과, 압축률에 제일 영향을 끼치는 요인은 `문자의 빈도수`이다. 문자들의 빈도수가 같은 상황일때를 대비한 특수한 알고리즘을 덧붙이면 더 좋은 압축률을 보여줄 수 있을거라 생각된다.
