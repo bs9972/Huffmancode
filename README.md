@@ -146,12 +146,13 @@ public class Huffman {
     private static void encodeText(String line) throws IOException {
         encoded = "";
         String encoded_split = "";
+        //문자마다 인코딩 
         for(int i = 0; i < text.length(); i++) {
             encoded += codes.get(text.charAt(i));
             encoded_split += codes.get(text.charAt(i)) + " ";
         }
         System.out.println("Encoded Text: " + encoded_split);
-        OutputStream output = new FileOutputStream("./encoded_result.txt");
+        OutputStream output = new FileOutputStream("./encoded_result.txt");//txt로 암호화된 문자열 출력
         byte[] by = encoded.getBytes();
         output.write(by);
     }
