@@ -163,10 +163,14 @@ public class Huffman {
         for(int i = 0; i<encoded.length();) {
             Node tmpNode = node;
             while(tmpNode.left != null && tmpNode.right != null && i < encoded.length()) {
-                if(encoded.charAt(i) == '1') {
-                    tmpNode = tmpNode.right;
-                } else {
-                    tmpNode = tmpNode.left;
+                //암호화된 string 문자열을 char 문자타입으로 변환한 값이 1이면 오른쪽 노드값을 0이면 왼쪽 노드값을
+                switch(encoded.charAt(i)){
+                    case '1':
+                        tmpNode = tmpNode.right;
+                        break;
+                    case '0':
+                        tmpNode = tmpNode.left;
+                        break; 
                 }
                 i++;
             }
