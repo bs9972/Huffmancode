@@ -155,7 +155,7 @@ public class Huffman {
         byte[] by = encoded.getBytes();
         output.write(by);
     }
-//
+//디코딩 
     private static void decodeText(String line) {
         decoded = "";
         Node node = nodes.peek();
