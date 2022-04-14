@@ -54,13 +54,13 @@ class Node {
 public class Huffman {
     static PriorityQueue<Node> nodes = new PriorityQueue<>((o1, o2) -> (o1.value < o2.value) ? -1 : 1);
     static TreeMap<Character, String> codes = new TreeMap<>();
-    static String text = "";
-    static String encoded = "";
-    static String decoded = "";
-    static int ASCII[] = new int[128];
+    static String text = "";//string text 초기화
+    static String encoded = "";//인코딩 문자열 초기화
+    static String decoded = "";//디코딩 문자열 초기화
+    static int ASCII[] = new int[128];// ascii 코드는 7비트 이므로 128 크기의 배열 초기화
 //메인
     public static void main(String[] args) throws IOException {
-        int SelectN = 0;
+        int SelectN = 0;//selectn 초기화
         while(SelectN != -1) {
             if(TextReader(SelectN))
                 continue;
@@ -80,12 +80,12 @@ public class Huffman {
 
         return SelectN;
     }
-//txt파일 읽고 쓰기
+//인코딩 파일 디코딩 파일 받고 인코딩 디코딩
     private static boolean TextReader(int SelectN) throws IOException {
         if(SelectN == 1) {
-            BufferedReader readFile = new BufferedReader(new FileReader("./input.txt"));
+            BufferedReader readFile = new BufferedReader(new FileReader("./input.txt"));//
             while(true) {
-                String line = readFile.readLine();
+                String line = readFile.readLine();//txt로 받은 문자열 line 에저장
                 if(line == null) break;
                 handleNew(line);
             }
@@ -131,7 +131,7 @@ public class Huffman {
         while(vector.size() > 1)
             vector.add(new Node(vector.poll(), vector.poll()));
     }
-
+// left를 탐색할 경우 0을, right를 탐색할 경우 1을 문자열에 추가
     private static void generateCodes(Node node, String s) {
         if(node != null) {
             if(node.right != null)
@@ -157,8 +157,8 @@ public class Huffman {
     }
 //디코딩 
     private static void decodeText(String line) {
-        decoded = "";
-        Node node = nodes.peek();
+        decoded = "";//문자열 초기화
+        Node node = nodes.peek();//노드 맨위부터 시작
         for(int i = 0; i<encoded.length();) {
             Node tmpNode = node;
             while(tmpNode.left != null && tmpNode.right != null && i < encoded.length()) {
@@ -169,10 +169,14 @@ public class Huffman {
                 }
                 i++;
             }
+            //노드가 있을때
             if(tmpNode != null) {
+                //노드 있을때
                 if(tmpNode.character.length() == 1) {
+                    //디코드 문자열에 해당 암호화된 문자 입력
                     decoded += tmpNode.character;
                 }
+                //노드 없을때
                 else {
                     System.out.println("Input not Valid");
                 }
