@@ -159,7 +159,7 @@ public class Huffman {
 //디코딩 
     private static void decodeText(String line) {
         decoded = "";//문자열 초기화
-        Node node = nodes.peek();//노드 맨위부터 시작
+        Node node = nodes.peek();
         for(int i = 0; i<encoded.length();) {
             Node tmpNode = node;
             while(tmpNode.left != null && tmpNode.right != null && i < encoded.length()) {
