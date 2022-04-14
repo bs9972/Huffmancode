@@ -20,12 +20,12 @@
 
 ---
 
-## 코드 구현 
+## 코드 구현 + 설명
 ```java
 import java.io.*;
 import java.util.*;
 
-//노드 생성 
+//노드 생성 빈도수,문자,왼쪽,오른쪽 노드 생성
 class Node {
     Node left, right;
     double value;
