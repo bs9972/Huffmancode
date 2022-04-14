@@ -58,7 +58,7 @@ public class Huffman {
     static String encoded = "";
     static String decoded = "";
     static int ASCII[] = new int[128];
-
+//메인
     public static void main(String[] args) throws IOException {
         int SelectN = 0;
         while(SelectN != -1) {
@@ -68,7 +68,7 @@ public class Huffman {
         }
         System.out.println("허프만 코드 종료");
     }
-
+//화면에 입출력할 것
     private static int console() throws IOException {
         int SelectN;
         Scanner sc = new Scanner(System.in);
@@ -80,7 +80,7 @@ public class Huffman {
 
         return SelectN;
     }
-
+//txt파일 읽고 쓰기
     private static boolean TextReader(int SelectN) throws IOException {
         if(SelectN == 1) {
             BufferedReader readFile = new BufferedReader(new FileReader("./input.txt"));
@@ -102,7 +102,7 @@ public class Huffman {
 
         return false;
     }
-
+//txt파일 처리
     private static void handleNew(String line) throws IOException {
         text = line;
         ASCII = new int[128];
@@ -126,7 +126,7 @@ public class Huffman {
             }
         }
     }
-
+//트리 생성
     private static void GenerateTree(PriorityQueue<Node> vector) {
         while(vector.size() > 1)
             vector.add(new Node(vector.poll(), vector.poll()));
@@ -142,7 +142,7 @@ public class Huffman {
                 codes.put(node.character.charAt(0), s);
         }
     }
-
+//인코딩
     private static void encodeText(String line) throws IOException {
         encoded = "";
         String encoded_split = "";
@@ -155,7 +155,7 @@ public class Huffman {
         byte[] by = encoded.getBytes();
         output.write(by);
     }
-
+//
     private static void decodeText(String line) {
         decoded = "";
         Node node = nodes.peek();
