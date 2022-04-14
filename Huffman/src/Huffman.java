@@ -137,10 +137,13 @@ public class Huffman {
         for(int i = 0; i<encoded.length();) {
             Node tmpNode = node;
             while(tmpNode.left != null && tmpNode.right != null && i < encoded.length()) {
-                if(encoded.charAt(i) == '1') {
-                    tmpNode = tmpNode.right;
-                } else {
-                    tmpNode = tmpNode.left;
+                switch(encoded.charAt(i)){
+                    case '1':
+                        tmpNode = tmpNode.right;
+                        break;
+                    case '0':
+                        tmpNode = tmpNode.left;
+                        break; 
                 }
                 i++;
             }
