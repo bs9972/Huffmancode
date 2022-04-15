@@ -52,8 +52,8 @@ class Node {
 }
 
 public class Huffman {
-    static PriorityQueue<Node> nodes = new PriorityQueue<>((o1, o2) -> (o1.value < o2.value) ? -1 : 1);
-    static TreeMap<Character, String> codes = new TreeMap<>();
+    static PriorityQueue<Node> nodes = new PriorityQueue<>((o1, o2) -> (o1.value < o2.value) ? -1 : 1);//우선순위큐 초기화 + 빈도수에 따른 우선 순위 조건 설정
+    static TreeMap<Character, String> codes = new TreeMap<>();// 트리 
     static String text = "";//string text 초기화
     static String encoded = "";//인코딩 문자열 초기화
     static String decoded = "";//디코딩 문자열 초기화
